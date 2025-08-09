@@ -1,7 +1,7 @@
-# Nashville's-Housing-Market-SQL-Driven-Analysis
+# Tennessee-Housing-Market-SQL-Driven-Analysis
 
 ## Overview
-Developed a data cleaning pipeline for the Nashville housing dataset using SQL to standardize and optimize data fields. This project involved filling missing property addresses based on ID matches, splitting address components into structured fields , standardizing categorical values , removing duplicate records, and dropping unused columns to streamline the data for further analysis.
+Developed a data cleaning pipeline for the Tennessee housing dataset using SQL to standardize and optimize data fields. This project involved filling missing property addresses based on ID matches, splitting address components into structured fields , standardizing categorical values , removing duplicate records, and dropping unused columns to streamline the data for further analysis.
 
 ## Features
 - **Address Completion:** Fills missing property addresses based on parcel ID matching, ensuring all records have accurate address information.
