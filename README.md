@@ -12,6 +12,24 @@ The code uses SQL joins, CTEs, string functions, window functions, and condition
 - **Duplicate Removal:**  Identifies and removes duplicate records based on unique combinations of parcel ID, address, sale price, sale date, and legal reference to maintain dataset integrity.
 - **Unused Column Removal:** Drops unnecessary columns to streamline the dataset, making it easier to analyze and interpret.
 
+## 🔍 Data Cleaning Steps
+
+#### 1. Filling Missing Property Addresses
+Parcels have a unique parcelid and should share the same propertyaddress.
+We join the table to itself to fill missing addresses.
+
+```sql
+SELECT a.uniqueid, a.parcelid, a.propertyaddress, 
+       b.uniqueid, b.parcelid, b.propertyaddress,
+       COALESCE(a.propertyaddress, b.propertyaddress)
+FROM nashville_housing a
+JOIN nashville_housing b
+    ON a.parcelid = b.parcelid
+    AND a.uniqueid <> b.uniqueid
+WHERE a.propertyaddress IS NULL
+ORDER BY a.parcelid;
+```
+
 ## Impact
 - Provides a clean and consistent dataset, ready for further analysis and visualization.
 - Enhances data accuracy by filling missing values and standardizing formats.
