@@ -92,6 +92,43 @@ UPDATE nashville_housing
 SET ownersplitstate = split_part(owneraddress, ',', 3);
 ```
 
+#### 4. Standardizing “Sold as Vacant” Values to Yes/No
+```sql
+UPDATE nashville_housing
+SET soldasvacant = CASE soldasvacant
+    WHEN 'Yes' THEN 'Yes'
+    WHEN 'No'  THEN 'No'
+    WHEN 'Y'   THEN 'Yes'
+    WHEN 'N'   THEN 'No'
+END;
+```
+
+#### 5. Removing Duplicates
+Using ROW_NUMBER() to find duplicate rows (excluding uniqueid):
+```sql
+DELETE FROM nashville_housing
+WHERE uniqueid IN (
+    SELECT uniqueid
+    FROM (
+        SELECT uniqueid,
+               ROW_NUMBER() OVER (
+                   PARTITION BY parcelid, propertyaddress, saleprice, saledate, legalreference
+                   ORDER BY parcelid
+               ) AS row_num
+        FROM nashville_housing
+    ) t
+    WHERE row_num > 1
+);
+```
+
+#### 6. Dropping Unused Columns
+```sql
+ALTER TABLE nashville_housing
+DROP COLUMN owneraddress,
+DROP COLUMN taxdistrict,
+DROP COLUMN propertyaddress;
+```
+
 ## Impact
 - Provides a clean and consistent dataset, ready for further analysis and visualization.
 - Enhances data accuracy by filling missing values and standardizing formats.
