@@ -3,7 +3,7 @@
 ## 📌Project Overview
 Data Cleaning for the Tennessee housing dataset using SQL to standardize and optimize data fields. This project involved filling missing property addresses based on ID matches, splitting address components into structured fields , standardizing categorical values , removing duplicate records, and dropping unused columns to streamline the data for further analysis.
 
-The code uses SQL joins, CTEs, string functions, window functions, and conditional updates.
+The code uses **SQL joins, CTEs, string functions, window functions, and conditional updates.**
 
 ## Features
 - **Address Completion:** Fills missing property addresses based on parcel ID matching, ensuring all records have accurate address information.
