@@ -30,6 +30,68 @@ WHERE a.propertyaddress IS NULL
 ORDER BY a.parcelid;
 ```
 
+#### Update using CTE:
+```sql
+WITH miss_address (
+    a_uniqueid, a_parcelid, a_propertyaddress,
+    b_uniqueid, b_parcelid, b_propertyaddress,
+    filled_address
+) AS (
+    SELECT a.uniqueid, a.parcelid, a.propertyaddress,
+           b.uniqueid, b.parcelid, b.propertyaddress,
+           COALESCE(a.propertyaddress, b.propertyaddress)
+    FROM nashville_housing a
+    JOIN nashville_housing b
+        ON a.parcelid = b.parcelid
+        AND a.uniqueid <> b.uniqueid
+)
+UPDATE nashville_housing
+SET propertyaddress = miss_address.filled_address
+FROM miss_address
+WHERE nashville_housing.uniqueid = miss_address.a_uniqueid;
+```
+
+#### 2. Splitting Property Address into Address & City
+```sql
+-- Add new columns
+ALTER TABLE nashville_housing
+ADD COLUMN propertysplitaddress VARCHAR(255);
+
+ALTER TABLE nashville_housing
+ADD COLUMN propertysplitcity VARCHAR(255);
+
+-- Fill split columns
+UPDATE nashville_housing
+SET propertysplitaddress = substring(propertyaddress, 1, POSITION(',' IN propertyaddress) - 1);
+
+UPDATE nashville_housing
+SET propertysplitcity = substring(propertyaddress, POSITION(',' IN propertyaddress) + 1, length(propertyaddress));
+```
+
+#### 3. Splitting Owner Address into Address, City, State
+Using split_part():
+```sql
+-- Add new columns
+ALTER TABLE nashville_housing
+ADD COLUMN ownersplitaddress VARCHAR(255);
+
+ALTER TABLE nashville_housing
+ADD COLUMN ownersplitcity VARCHAR(255);
+
+ALTER TABLE nashville_housing
+ADD COLUMN ownersplitstate VARCHAR(255);
+
+-- Fill new columns
+UPDATE nashville_housing
+SET ownersplitaddress = split_part(owneraddress, ',', 1);
+
+UPDATE nashville_housing
+SET ownersplitcity = split_part(owneraddress, ',', 2);
+
+UPDATE nashville_housing
+SET ownersplitstate = split_part(owneraddress, ',', 3);
+```
+
 ## Impact
 - Provides a clean and consistent dataset, ready for further analysis and visualization.
 - Enhances data accuracy by filling missing values and standardizing formats.
